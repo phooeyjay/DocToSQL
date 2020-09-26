@@ -1,0 +1,15 @@
+{
+  "name": "doctosql",
+  "version": "1.0.0",
+  "description": "Desktop aplication to convert preset information into SQL statements.",
+  "main": "app.js",
+  "dependencies": {},
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Liew Wei Jie",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^10.1.1"
+  }
+}
