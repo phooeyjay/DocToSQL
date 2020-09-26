@@ -1,19 +1,11 @@
 let fsex = require('fs-extra');
 let DSQL = {};
 
-DSQL.SQLHistory = [];
-DSQL.ClearHistory = function () { DSQL.SQLHistory.length = 0 };
-
 //#region Predefines
-DSQL.PREDEFINES = {}
-/**
- * Defines the conversion type and thus the module of DSQL to use.
- */
-DSQL.PREDEFINES.CType = { UNDEFINED: null, DEF2SQL: 'DEFAULT2SQL' };
-
+DSQL.PD = {};
 class SQLColumnValuePair {
     /**
-     * Defines a key-value pair relating to a column and its field value
+     * Defines a key-value pair relating to a column and its field value.
      * @param {string} col The identity of the SQL column to change.
      * @param {string | number} val A value of either string or a number to modify the original value in the specified column.
      */
@@ -22,12 +14,12 @@ class SQLColumnValuePair {
         this.Value = val;
     }
 
-    AsQueryString() { 
-        let rewrite = typeof(this.Value) === Number ? this.Value : `'${this.Value}'`;
+    AsQueryString() {
+        let rewrite = typeof this.Value == 'number' ? this.Value : `'${this.Value}'`;
         return `[${this.Column}] = ${rewrite}`;
     }
 };
-DSQL.PREDEFINES.SQLColumnValuePair = SQLColumnValuePair;
+DSQL.PD.SQLColumnValuePair = SQLColumnValuePair;
 
 class UpdateTemplate {
     /**
@@ -37,6 +29,7 @@ class UpdateTemplate {
      * @param {SQLColumnValuePair[]} conditions Defines an array of SQLColumnValuePairs that act as the condition to query against the specified table.
      */
     constructor(name = '', modifications = [], conditions = []) {
+        this.InstanceID = `UT${Date.now()}`;
         this.ConcatenatedTableInfo = name;
         this.Modifications = modifications;
         this.Conditionals = conditions;
@@ -67,35 +60,35 @@ class UpdateTemplate {
             this.Modifications === upd.Modifications &&
             this.Conditionals === upd.Conditionals;
     }
-}
-DSQL.PREDEFINES.UpdateTemplate = UpdateTemplate;
+};
+DSQL.PD.UpdateTemplate = UpdateTemplate;
 //#endregion
 
-//#region Default2SQL
-DSQL.DEFAULT2SQL = {};
-/**
- * Appends an SQL UPDATE instance to history using DEFAULT2SQL definition.
- * @param {string} server The server name containing the database.
- * @param {string} db The database name containing the table.
- * @param {string} table The table name containing the pairs for modification and conditions.
- * @param {SQLColumnValuePair[]} modifs An array of SQLColumnValuePairs to modify.
- * @param {SQLColumnValuePair[]} condis An array of SQLcolumnValuePairs to be used as conditionals.
- */
-DSQL.DEFAULT2SQL.AppendSQLUpdate = function (server, db, table, modifs, condis) { 
-    DSQL.SQLHistory.push(new DSQL.PREDEFINES.UpdateTemplate(`[${server}].[${db}].[${table}]`, modifs, condis));
+//#region Commons
+DSQL.COMMON = {
+    /** @type {UpdateTemplate[]} */
+    SQLInstances: [],
+
+    /** @param {UpdateTemplate} instance An SQL Template instance to be added to the array. */
+    AddInstance: function (instance) { this.SQLInstances.push(instance); },
+    ClearInstances: function () { this.SQLInstances.length = 0; },
+    /** @param {string} id Defines the ID to filter out of the array. */
+    RemoveInstance: function (id) { this.SQLInstances.splice(this.SQLInstances.findIndex(i => i.InstanceID == id), 1); }
 }
 //#endregion
 
-//#region CSV2SQL
-DSQL.CSV2SQL = {};
-/**
- * Appends an SQL UPDATE instance to history using CSV2SQL definition.
- * @param {string} server The server name containing the database.
- * @param {string} db The database name containing the table.
- * @param {string} table The table name containing the pairs for modification and conditions.
- * @param {string} csv A local directory path defining a CSV document to parse.
- */
-DSQL.CSV2SQL.AppendSQLUpdate = function(server, db, table, csv) {
-    throw 'Not implemented';
-}
+//#region X2SQL
+DSQL.SQL = {
+    /**
+     * Appends an SQL UPDATE instance using DEFAULT2SQL format.
+     * @param {string} server Defines the name of the server.
+     * @param {string} db Defines the name of the database.
+     * @param {string} table Defines the name of the table.
+     * @param {SQLColumnValuePair[]} modifs A set of column-value pairs to modify.
+     * @param {SQLColumnValuePair[]} condis A set of column-value pairs to use as update conditionals.
+     */
+    DEF2SQL: function (server, db, table, modifs, condis) {
+        DSQL.COMMON.SQLHistory.push(new DSQL.PD.UpdateTemplate(`[${server}].[${db}].[${table}]`, modifs, condis));
+    }
+};
 //#endregion
