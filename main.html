@@ -7,10 +7,23 @@
 </head>
 
 <body>
-    <div class="workstation"></div>
-    <div class="viewbox">
-        <div class="vb-sqlviewer"></div>
-        <div class="vb-controls"></div>
+    <!-- tab select -->
+    <div class="ts"></div>
+
+    <!-- workstation -->
+    <div class="ws"></div>
+
+    <!-- viewbox -->
+    <div class="vb">
+        <div class="vb-stmt-view">
+            <div class="stmt-view-box">
+            </div>
+        </div>
+        <div class="vb-controls">
+            <div class="controls-button" id="optSQL">Optimize SQL</div>
+            <div class="controls-button" id="copyTo">Copy To Clipboard</div>
+            <div class="controls-button" id="makeFile">Create SQL File</div>
+        </div>
     </div>
 </body>
 
