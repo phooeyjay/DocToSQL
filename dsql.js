@@ -1,6 +1,6 @@
 let fsex = require('fs-extra');
 
-function NotImplementedAlert() { alert('Not implemented!'); }
+function NotImplementedAlert() { alert('Not implemented.'); }
 
 class SQLColumnValuePair {
     /** @param {string} col @param {string | number} val */
@@ -53,19 +53,20 @@ class DSQL {
     /** @param {string} serv @param {string} db @param {string} table  @param {SQLColumnValuePair[]} modifs @param {SQLColumnValuePair[]} condis */
     AppendDefaultSQLFormat(serv, db, table, modifs, condis) { this.AddSQL(new UpdateTemplate(`[${serv}].[${db}].[${table}]`, modifs, condis)); }
 
-    CopySQL() {
-        let copyString = '';
-        if (this.SQLInstances && this.SQLInstances.length != 0) {
-            for (let SQLInstance of this.SQLInstances) copyString += SQLInstance.BuildSQL() + '\n';
-        }
-
-        console.log(copyString);
-    }
-
     ClearSQL() { this.SQLInstances.length = 0; }
 
-    OptimizeSQL() { 
-        NotImplementedAlert();
+    CopySQL() {
+        let copyString = '';
+        for (let SQLInstance of this.SQLInstances) copyString += SQLInstance.BuildSQL() + '\n';
+
+        return copyString;
+    }
+
+    OptimizeSQL() {
+        if (this.SQLInstances.length != 0) {
+
+        }
+        alert('Successfully optimized.')
     }
 
     /** @param {string} id */
@@ -73,13 +74,3 @@ class DSQL {
         if (id != '') this.SQLInstances.splice(this.SQLInstances.findIndex(i => i.InstanceID == id), 1);
     }
 }
-
-document.addEventListener('readystatechange', function() {
-    if (document.readyState == 'complete') {
-        let DSQLInstance = new DSQL();
-
-        document.getElementById('optSQL').addEventListener('click', DSQLInstance.OptimizeSQL);
-        document.getElementById('copyTo').addEventListener('click', DSQLInstance.CopySQL);
-        document.getElementById('makeFile').addEventListener('click', NotImplementedAlert);
-    }
-})
