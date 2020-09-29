@@ -1,6 +1,4 @@
-let fsex = require('fs-extra');
-
-function NotImplementedAlert() { alert('Not implemented.'); }
+let { NotImplementedError } = require('./dsql.misc');
 
 class SQLColumnValuePair {
     /** @param {string} col @param {string | number} val */
@@ -13,15 +11,22 @@ class SQLColumnValuePair {
         let rewrite = typeof this.Value == 'number' ? this.Value : `'${this.Value}'`;
         return `[${this.Column}] = ${rewrite}`;
     }
-};
+}
 
-class UpdateTemplate {
-    /** @param {string} name @param {SQLColumnValuePair[]} modifications @param {SQLColumnValuePair[]} conditions */
-    constructor(name = '', modifications = [], conditions = []) {
-        this.InstanceID = `UT${Date.now()}`;
-        this.ConcatenatedTableInfo = name;
-        this.Modifications = modifications;
-        this.Conditionals = conditions;
+class Template {
+    /** @param {string} name @param {SQLColumnValuePair[]} conditions */
+    constructor(name, conditions) {
+        this.InstanceID = `${Date.now()}`;
+        this.ConcatTableInfo = name;
+        this.QueryConditions = conditions;
+    }
+}
+
+class UpdateTemplate extends Template {
+    /** @param {string} name @param {SQLColumnValuePair[]} conditions @param {SQLColumnValuePair[]} modifications */
+    constructor(name, conditions, modifications) {
+        super(name, conditions);
+        this.QueryModifications = modifications;
     }
 
     BuildSQL() {
@@ -39,7 +44,7 @@ class UpdateTemplate {
         }
         return `${sqlString};`;
     }
-};
+}
 
 class DSQL {
     constructor() {
@@ -55,18 +60,18 @@ class DSQL {
 
     ClearSQL() { this.SQLInstances.length = 0; }
 
-    CopySQL() {
+    CopySQLToClipboard() {
         let copyString = '';
         for (let SQLInstance of this.SQLInstances) copyString += SQLInstance.BuildSQL() + '\n';
 
-        return copyString;
+        navigator.clipboard.writeText(copyString).then(
+            function () { alert('Successfully copied to clipboard.'); },
+            function (reason) { alert(`Failed to copy to clipboard: ${reason}.`); }
+        );
     }
 
     OptimizeSQL() {
-        if (this.SQLInstances.length != 0) {
-
-        }
-        alert('Successfully optimized.')
+        throw NotImplementedError(this.OptimizeSQL.name);
     }
 
     /** @param {string} id */
@@ -74,3 +79,5 @@ class DSQL {
         if (id != '') this.SQLInstances.splice(this.SQLInstances.findIndex(i => i.InstanceID == id), 1);
     }
 }
+/** @class */
+module.exports.DSQL = DSQL;

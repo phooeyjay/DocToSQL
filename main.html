@@ -3,22 +3,23 @@
 
 <head>
     <link href="style.css" rel="stylesheet">
-    <script type="text/javascript" src="dsql.js"></script>
     <script>
-        let DSQLInstance = new DSQL();
+        window.onload = function() {
+            let script = document.createElement('script');
+            script.setAttribute("type", "text/javascript");
+            script.setAttribute("src", "dsql.main.js");
 
-        function SQLToClipboard() {
-            navigator.clipboard.writeText(DSQLInstance.CopySQL()).then(
-                function () { alert('SQL successfully copied to clipboard.'); },
-                function () { alert('Unable to copy due to rejected permissions.'); }
-            );
+            document.head.appendChild(script);
         }
     </script>
 </head>
 
 <body>
     <!-- tab select -->
-    <div class="ts"></div>
+    <div class="ts">
+        <div class="ts-tab ts-tab-active" id="def2sql">Definition To SQL</div>
+        <div class="ts-tab" id="csv2sql">CSV To SQL</div>
+    </div>
 
     <!-- workstation -->
     <div class="ws"></div>
@@ -30,9 +31,9 @@
             </div>
         </div>
         <div class="vb-controls">
-            <div class="controls-button" onclick="DSQLInstance.OptimizeSQL()">Optimize SQL</div>
-            <div class="controls-button" onclick="SQLToClipboard()">Copy To Clipboard</div>
-            <div class="controls-button" onclick="NotImplementedAlert()">Create SQL File</div>
+            <div class="controls-button" id="optimize">Optimize SQL</div>
+            <div class="controls-button" id="copy">Copy To Clipboard</div>
+            <div class="controls-button" id="save">Create SQL File</div>
         </div>
     </div>
 </body>
